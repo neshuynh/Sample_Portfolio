@@ -7,6 +7,6 @@ Sample portfolio
 
 ## Data Exploration
 
-[CPP](Main.cpp) C++ file of my code that calculates sum, mean, median, range, covariance, and correlation of 2 vectors read from the "Boston.csv" file
+[CPP](Data Exploration/Main.cpp) C++ file of my code that calculates sum, mean, median, range, covariance, and correlation of 2 vectors read from the "Boston.csv" file
 
-[TXT](answers.txt) Text document of my output and answers to the given questions
+[TXT](Data Exploration/answers.txt) Text document of my output and answers to the given questions
