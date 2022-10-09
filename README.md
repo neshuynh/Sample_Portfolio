@@ -23,3 +23,15 @@ Sample portfolio
 [CPP](ML_Scratch/Logistic_Regression.cpp) C++ code for the Logistic Regression program
 
 [CPP](ML_Scratch/Naive_Bayes.cpp) C++ code for the Naive Bayes program
+
+## Searching for Similarity
+
+[PDF](Similarity/Searching_for_Similarity.pdf) PDF of answers and analysis
+
+[PDF](Similarity/Regression.pdf) PDF of Regression code and outputs in R
+
+[PDF](Similarity/pfc4_Classification.pdf) PDF of Classification code and outputs in R
+
+[PDF](Similarity/Clustering.pdf) PDF of Clustering code and outputs in R
+
+[PDF](Similarity/Dimensionality_Reduction.pdf) PDF of Dimensionalilty Reduction code and outputs in R
