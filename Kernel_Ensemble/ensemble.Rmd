@@ -1,0 +1,100 @@
+---
+title: "Ensemble Techniques"
+author: "Ethan Huynh and Ryan Gagliardi"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+editor_options:
+  chunk_output_type: inline
+---
+
+Load packages and data. Factor the necessary columns.
+
+```{r}
+library(e1071)
+library(MASS)
+library(RWeka)
+df <- read.csv('adult.csv')
+colnames(df) <- c("age","workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country","income")
+df$income <- factor(df$income)
+df$education <- factor(df$education)
+df$sex <- factor(df$sex)
+df$race <- factor(df$race)
+```
+
+
+### Divide into train, test, validate
+
+Cut the data set from 32000 rows to 13000 rows randomly
+Then divide into train, test, and validate sets
+
+```{r}
+library(mltools)
+set.seed(6164)
+i <- sample(1:nrow(df), 0.4*nrow(df), replace=FALSE)
+df2 <- df[i,]
+
+spec <- c(train=.6, test=.2, validate=.2)
+i2 <- sample(cut(1:nrow(df2),nrow(df2)*cumsum(c(0,spec)), labels=names(spec)))
+train <- df2[i2=="train",]
+test <- df2[i2=="test",]
+vald <- df2[i2=="validate",]
+```
+
+
+### Random Forest 
+
+```{r}
+library(randomForest)
+set.seed(6164)
+rf <- randomForest(income~education+sex+race, data=train, importance=TRUE)
+rf
+pred <- predict(rf, newdata=test, type="response")
+acc_rf <- mean(pred==test$income)
+mcc_rf <- mcc(factor(pred), test$income)
+print(paste("accuracy=", acc_rf))
+print(paste("mcc=", mcc_rf))
+```
+
+
+### boosting from adabag library
+
+```{r}
+library(adabag)
+adab1 <- boosting(income~education+sex+race, data=train, boos=TRUE, mfinal=20, coeflearn='Breiman')
+summary(adab1)
+```
+
+
+```{r}
+pred <- predict(adab1, newdata=test, type="response")
+acc_adabag <- mean(pred$class==test$income)
+mcc_adabag <- mcc(factor(pred$class), test$income)
+print(paste("accuracy=", acc_adabag))
+print(paste("mcc=", mcc_adabag))
+```
+
+
+### XGBoost
+
+```{r}
+library(xgboost)
+train_label <- ifelse(train$income==" >50K", 1, 0)
+train_matrix <- data.matrix(train[c(4,9,10)])
+temp <- train[c(4,9,10)]
+model <- xgboost(data=train_matrix, label=train_label,
+                 nrounds=100, objective='binary:logistic')
+test_label <- ifelse(test$income==" >50K", 1, 0)
+test_matrix <- data.matrix(test[c(4,9,10)])
+probs <- predict(model, test_matrix)
+pred <- ifelse(probs>0.5, 1, 0)
+acc_xg <- mean(pred==test_label)
+mcc_xg <- mcc(pred, test_label)
+print(paste("accuracy=", acc_xg))
+print(paste("mcc=", mcc_xg))
+```
+
+
+### Best method
+In the case of Random Forest, XGBoost, and basic boosting, their speeds and accuracy vary. Basic boosting is much slower than the other two, followed by random forest, and XGBoost being the fastest by far. Random Forest and XGBoost are both .77 accuracy, while basic boost is slightly more accurate at .79 accuracy. The sacrifice of speed for accuracy is shown here with basic boosting which is slower than the rest but also more accurate. As you scale the amount of data used it might change which method you choose to use for analysis. With massive data sets it is most likely more efficient to use one of the faster options, while if the data set is smaller and needs to be more precise, basic boosting is far better.

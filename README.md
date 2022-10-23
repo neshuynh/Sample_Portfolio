@@ -35,3 +35,13 @@ Sample portfolio
 [PDF](Similarity/Clustering.pdf) PDF of Clustering code and outputs in R
 
 [PDF](Similarity/Dimensionality_Reduction.pdf) PDF of Dimensionalilty Reduction code and outputs in R
+
+## Kernel and Ensemble
+
+[PDF](Kernel_Ensemble/Narrative.pdf) PDF of answers and analysis
+
+[PDF](Kernel_Ensemble/SVM_Regression.pdf) PDF of Regression code and outputs in R
+
+[PDF](Kernel_Ensemble/SVM_Classification.pdf) PDF of Classification code and outputs in R
+
+[PDF](Kernel_Ensemble/Ensemble_Techniques.pdf) PDF of Ensemble Techniques code and outputs in R

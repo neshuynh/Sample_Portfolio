@@ -1,0 +1,132 @@
+---
+title: "SVM Classification"
+author: "Ethan Huynh and Ryan Gagliardi"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+editor_options:
+  chunk_output_type: inline
+---
+
+Load packages and data. Factor the necessary columns.
+
+```{r}
+library(e1071)
+library(MASS)
+df <- read.csv('adult.csv')
+colnames(df) <- c("age","workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country","income")
+df$income <- factor(df$income)
+df$education <- factor(df$education)
+df$sex <- factor(df$sex)
+df$race <- factor(df$race)
+```
+
+
+### Divide into train, test, validate
+
+Cut the data set from 32000 rows to 13000 rows randomly
+Then divide into train, test, and validate sets
+
+```{r}
+set.seed(6164)
+i <- sample(1:nrow(df), 0.4*nrow(df), replace=FALSE)
+df2 <- df[i,]
+
+spec <- c(train=.6, test=.2, validate=.2)
+i2 <- sample(cut(1:nrow(df2),nrow(df2)*cumsum(c(0,spec)), labels=names(spec)))
+train <- df2[i2=="train",]
+test <- df2[i2=="test",]
+vald <- df2[i2=="validate",]
+```
+
+
+### Data exploration
+
+Let's explore the data with R functions and plots.
+
+```{r}
+str(df)
+dim(df)
+head(df)
+```
+
+
+### Build a logistic regression model for baseline
+
+```{r}
+glm1 <- glm(income~education+sex+race, data=train, family="binomial")
+summary(glm1)
+```
+
+
+### Try a linear kernel
+
+```{r}
+svm1 <- svm(income~education+sex+race, data=train, kernel="linear", cost=10, scale=TRUE)
+summary(svm1)
+pred <- predict(svm1, newdata=test)
+table(pred, test$income)
+mean(pred==test$income)
+```
+
+
+### Tune
+
+```{r}
+tune_svm1 <- tune(svm, income~education+sex+race, data=vald, kernel="linear"
+                  ,ranges=list(cost=c(0.001, 0.01, 0.1, 1, 5, 10, 100)))
+summary(tune_svm1)
+```
+
+
+### Evaluate on best linear svm
+
+```{r}
+pred <- predict(tune_svm1$best.model, newdata=test)
+table(pred, test$income)
+mean(pred==test$income)
+```
+
+
+### Try a polynomial kernel
+
+```{r}
+svm2 <- svm(income~education+sex+race, data=train, kernel="polynomial", cost=10, scale=TRUE)
+summary(svm2)
+pred <- predict(svm2, newdata=test)
+table(pred, test$income)
+mean(pred==test$income)
+```
+
+
+### Try a radial kernel
+
+```{r}
+svm3 <- svm(income~education+sex+race, data=train, kernel="radial", cost=10, gamma=1, scale=TRUE)
+summary(svm3)
+pred <- predict(svm3, newdata=test)
+table(pred, test$income)
+mean(pred==test$income)
+```
+
+
+### Tune hyperperameters
+
+```{r}
+set.seed(6164)
+tune.out <- tune(svm, income~education+sex+race, data=vald, kernel="radial",
+                 ranges=list(cost=c(0.1,1,10,100,1000),
+                             gamma=c(0.5,1,2,3,4)))
+summary(tune.out)
+svm4 <- svm(income~education+sex+race, data=train, kernel="radial", cost=100, gamma=0.5, scale=TRUE)
+summary(svm4)
+pred <- predict(svm4, newdata=test)
+table(pred, test$income)
+mean(pred==test$income)
+```
+
+
+### Best method
+
+In this case the data was correlated so well and in a way that all algorithms got almost the exact same accuracy. Both radial and polynomial got .77 accuracy while linear got .76. This is likely because both radial and polynomial are able to "bend" to get a more accurate fit for the data and be the most in line with the data points around it while linear has to be a straight line making it unable to conform to irregular data trends.
