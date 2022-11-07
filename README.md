@@ -45,3 +45,8 @@ Sample portfolio
 [PDF](Kernel_Ensemble/SVM_Classification.pdf) PDF of Classification code and outputs in R
 
 [PDF](Kernel_Ensemble/Ensemble_Techniques.pdf) PDF of Ensemble Techniques code and outputs in R
+
+## Sklearn with Python
+[PDF](sklearn/sklearn.pdf) PDF of python notebook and analysis
+
+[CSV](sklearn/Auto.csv) CSV file of sample data used in the notebook
