@@ -50,3 +50,7 @@ Sample portfolio
 [PDF](sklearn/sklearn.pdf) PDF of python notebook and analysis
 
 [CSV](sklearn/Auto.csv) CSV file of sample data used in the notebook
+
+## Image Classification
+[PDF](Image_Class/Image_Class.pdf) PDF of python notebook and analysis
+[IPYNB](Image_Class/Image_Class.ipynb) Raw python notebook
